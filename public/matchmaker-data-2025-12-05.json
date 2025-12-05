@@ -1,0 +1,91 @@
+{
+  "players": [
+    {
+      "id": "37f4fe55-1a0d-40a6-b315-47141df89f5e",
+      "name": "bart",
+      "createdAt": 1764932629140,
+      "isActive": false
+    },
+    {
+      "id": "4113e72d-1218-4916-8ac5-df309a7dadb1",
+      "name": "rob",
+      "createdAt": 1764932635836,
+      "isActive": true
+    },
+    {
+      "id": "81f163a4-b00f-4d1b-80a5-fb84d7afde5f",
+      "name": "thijs",
+      "createdAt": 1764932642093,
+      "isActive": true
+    },
+    {
+      "id": "a21297e8-2290-4659-8a1b-31c76ba21bc7",
+      "name": "johan",
+      "createdAt": 1764932648757,
+      "isActive": true
+    },
+    {
+      "id": "23af30b9-3753-4d84-bdaf-aae59861580c",
+      "name": "bert",
+      "createdAt": 1764935326418,
+      "isActive": true
+    },
+    {
+      "id": "96ab22d4-7a0b-45f0-8af1-0b538ad51174",
+      "name": "john",
+      "createdAt": 1764935341826,
+      "isActive": true
+    },
+    {
+      "id": "e57a417c-033f-4fb8-a2f2-0ed0d5d6cb12",
+      "name": "rikus",
+      "createdAt": 1764946269667
+    },
+    {
+      "id": "5bd5bd4f-5f4e-4699-ac97-4dc78df1607c",
+      "name": "olaf",
+      "createdAt": 1764946273297
+    },
+    {
+      "id": "96cfcbcc-f724-4683-95c5-469399d2b345",
+      "name": "frank",
+      "createdAt": 1764946278601
+    }
+  ],
+  "groups": [
+    {
+      "id": "29e6cb09-5b03-4dd5-9382-89f02cc96746",
+      "name": "Maandagavond",
+      "color": "bg-blue-500",
+      "playerIds": [
+        "a21297e8-2290-4659-8a1b-31c76ba21bc7",
+        "23af30b9-3753-4d84-bdaf-aae59861580c",
+        "96ab22d4-7a0b-45f0-8af1-0b538ad51174",
+        "4113e72d-1218-4916-8ac5-df309a7dadb1",
+        "37f4fe55-1a0d-40a6-b315-47141df89f5e",
+        "4191ea2c-341e-475b-b0f2-7c17de2cabdc",
+        "e3abbd4f-a5a6-44ab-bb41-11f5a9dd453b",
+        "18911330-2a88-4a4d-9e9a-4f98d5936454",
+        "ae8058d9-8cfc-4934-9172-08b5d389ae71",
+        "e57a417c-033f-4fb8-a2f2-0ed0d5d6cb12",
+        "5bd5bd4f-5f4e-4699-ac97-4dc78df1607c",
+        "96cfcbcc-f724-4683-95c5-469399d2b345"
+      ],
+      "createdAt": 1764932621733
+    }
+  ],
+  "activePlayerIds": [
+    "37f4fe55-1a0d-40a6-b315-47141df89f5e",
+    "23af30b9-3753-4d84-bdaf-aae59861580c",
+    "18911330-2a88-4a4d-9e9a-4f98d5936454",
+    "4191ea2c-341e-475b-b0f2-7c17de2cabdc",
+    "ae8058d9-8cfc-4934-9172-08b5d389ae71",
+    "4113e72d-1218-4916-8ac5-df309a7dadb1",
+    "e3abbd4f-a5a6-44ab-bb41-11f5a9dd453b",
+    "96ab22d4-7a0b-45f0-8af1-0b538ad51174",
+    "a21297e8-2290-4659-8a1b-31c76ba21bc7",
+    "96cfcbcc-f724-4683-95c5-469399d2b345",
+    "5bd5bd4f-5f4e-4699-ac97-4dc78df1607c",
+    "e57a417c-033f-4fb8-a2f2-0ed0d5d6cb12"
+  ]
+}
