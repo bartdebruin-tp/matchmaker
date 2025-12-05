@@ -58,18 +58,15 @@
       "name": "Maandagavond",
       "color": "bg-blue-500",
       "playerIds": [
-        "a21297e8-2290-4659-8a1b-31c76ba21bc7",
-        "23af30b9-3753-4d84-bdaf-aae59861580c",
-        "96ab22d4-7a0b-45f0-8af1-0b538ad51174",
-        "4113e72d-1218-4916-8ac5-df309a7dadb1",
         "37f4fe55-1a0d-40a6-b315-47141df89f5e",
-        "4191ea2c-341e-475b-b0f2-7c17de2cabdc",
-        "e3abbd4f-a5a6-44ab-bb41-11f5a9dd453b",
-        "18911330-2a88-4a4d-9e9a-4f98d5936454",
-        "ae8058d9-8cfc-4934-9172-08b5d389ae71",
-        "e57a417c-033f-4fb8-a2f2-0ed0d5d6cb12",
+        "23af30b9-3753-4d84-bdaf-aae59861580c",
+        "96cfcbcc-f724-4683-95c5-469399d2b345",
+        "a21297e8-2290-4659-8a1b-31c76ba21bc7",
+        "96ab22d4-7a0b-45f0-8af1-0b538ad51174",
         "5bd5bd4f-5f4e-4699-ac97-4dc78df1607c",
-        "96cfcbcc-f724-4683-95c5-469399d2b345"
+        "e57a417c-033f-4fb8-a2f2-0ed0d5d6cb12",
+        "4113e72d-1218-4916-8ac5-df309a7dadb1",
+        "81f163a4-b00f-4d1b-80a5-fb84d7afde5f"
       ],
       "createdAt": 1764932621733
     }
@@ -77,15 +74,11 @@
   "activePlayerIds": [
     "37f4fe55-1a0d-40a6-b315-47141df89f5e",
     "23af30b9-3753-4d84-bdaf-aae59861580c",
-    "18911330-2a88-4a4d-9e9a-4f98d5936454",
-    "4191ea2c-341e-475b-b0f2-7c17de2cabdc",
-    "ae8058d9-8cfc-4934-9172-08b5d389ae71",
-    "4113e72d-1218-4916-8ac5-df309a7dadb1",
-    "e3abbd4f-a5a6-44ab-bb41-11f5a9dd453b",
-    "96ab22d4-7a0b-45f0-8af1-0b538ad51174",
-    "a21297e8-2290-4659-8a1b-31c76ba21bc7",
     "96cfcbcc-f724-4683-95c5-469399d2b345",
+    "a21297e8-2290-4659-8a1b-31c76ba21bc7",
     "5bd5bd4f-5f4e-4699-ac97-4dc78df1607c",
-    "e57a417c-033f-4fb8-a2f2-0ed0d5d6cb12"
+    "e57a417c-033f-4fb8-a2f2-0ed0d5d6cb12",
+    "4113e72d-1218-4916-8ac5-df309a7dadb1",
+    "81f163a4-b00f-4d1b-80a5-fb84d7afde5f"
   ]
 }
