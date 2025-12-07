@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { usePlayersStore } from '@/stores/players'
 import { useStorageStore } from '@/stores/storage'
+import { useToast } from '@/composables/useToast'
 import BottomNav from '@/organisms/BottomNav.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import PlayerCard from '@/components/PlayerCard.vue'
@@ -10,9 +11,18 @@ import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 const playersStore = usePlayersStore()
 const storageStore = useStorageStore()
+const toast = useToast()
 
 const isModalOpen = ref(false)
 const editPlayerId = ref<string | null>(null)
+
+onMounted(async () => {
+  try {
+    await playersStore.fetchPlayers()
+  } catch (error) {
+    console.error('Error loading players:', error)
+  }
+})
 
 const sortedPlayers = computed(() => {
   return [...playersStore.players].sort((a, b) => a.name.localeCompare(b.name))
@@ -28,10 +38,16 @@ function openEditModal(playerId: string) {
   isModalOpen.value = true
 }
 
-function handleDelete(playerId: string) {
+async function handleDelete(playerId: string) {
   if (confirm('Are you sure you want to delete this player?')) {
-    playersStore.deletePlayer(playerId)
-    storageStore.saveData()
+    try {
+      await playersStore.deletePlayer(playerId)
+      storageStore.saveData()
+      toast.success('Player deleted successfully')
+    } catch (error) {
+      console.error('Error deleting player:', error)
+      toast.error('Failed to delete player')
+    }
   }
 }
 

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 import { usePlayersStore } from '@/stores/players'
+import { useToast } from '@/composables/useToast'
 import BaseModal from '@/components/BaseModal.vue'
 import BaseInput from '@/components/BaseInput.vue'
 import BaseButton from '@/components/BaseButton.vue'
@@ -21,8 +22,10 @@ const emit = defineEmits<{
 }>()
 
 const playersStore = usePlayersStore()
+const toast = useToast()
 const playerName = ref('')
 const error = ref('')
+const saving = ref(false)
 const nameInputRef = ref<InstanceType<typeof BaseInput> | null>(null)
 
 function initializeForm() {
@@ -43,22 +46,31 @@ async function handleSave() {
     return
   }
 
-  if (props.editPlayerId) {
-    playersStore.updatePlayer(props.editPlayerId, playerName.value.trim())
-    emit('saved')
-    emit('close')
-  } else {
-    playersStore.addPlayer(playerName.value.trim())
-    emit('saved')
-    // Reset form for adding another player
-    playerName.value = ''
-    error.value = ''
-    // Refocus the input after adding
-    await nextTick()
-    const inputElement = nameInputRef.value?.$el?.querySelector('input')
-    if (inputElement) {
-      inputElement.focus()
+  saving.value = true
+  error.value = ''
+
+  try {
+    if (props.editPlayerId) {
+      await playersStore.updatePlayer(props.editPlayerId, playerName.value.trim())
+      toast.success('Player updated successfully')
+      emit('saved')
+    } else {
+      await playersStore.addPlayer(playerName.value.trim())
+      toast.success('Player added successfully')
+      emit('saved')
+      // Reset form for adding another player
+      playerName.value = ''
+      // Refocus the input after adding
+      await nextTick()
+      const inputElement = nameInputRef.value?.$el?.querySelector('input')
+      if (inputElement) {
+        inputElement.focus()
+      }
     }
+  } catch (e: any) {
+    error.value = e.message || 'Failed to save player'
+  } finally {
+    saving.value = false
   }
 }
 
@@ -90,7 +102,7 @@ watch(() => props.isOpen, async (isOpen) => {
       <XMarkIcon class="w-6 h-6" />
     </template>
 
-    <div class="space-y-4">
+    <form @submit.prevent="handleSave" class="space-y-4">
       <BaseInput
         ref="nameInputRef"
         v-model="playerName"
@@ -100,13 +112,13 @@ watch(() => props.isOpen, async (isOpen) => {
       />
 
       <div class="flex gap-3">
-        <BaseButton variant="secondary" full-width @click="handleClose">
+        <BaseButton variant="secondary" full-width type="button" @click="handleClose" :disabled="saving">
           Cancel
         </BaseButton>
-        <BaseButton variant="primary" full-width @click="handleSave">
-          {{ editPlayerId ? 'Update' : 'Add' }}
+        <BaseButton variant="primary" full-width type="submit" :disabled="saving">
+          {{ saving ? 'Saving...' : (editPlayerId ? 'Update' : 'Add') }}
         </BaseButton>
       </div>
-    </div>
+    </form>
   </BaseModal>
 </template>

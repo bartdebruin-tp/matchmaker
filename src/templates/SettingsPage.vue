@@ -1,26 +1,44 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useStorageStore } from '@/stores/storage'
 import { usePlayersStore } from '@/stores/players'
 import { useGroupsStore } from '@/stores/groups'
+import { useAuthStore } from '@/stores/auth'
 import BottomNav from '@/organisms/BottomNav.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseModal from '@/components/BaseModal.vue'
 import { 
   ArrowDownTrayIcon, 
   ArrowUpTrayIcon, 
-  TrashIcon 
+  TrashIcon,
+  ArrowRightOnRectangleIcon 
 } from '@heroicons/vue/24/outline'
 import type { AppData } from '@/types'
 
+const router = useRouter()
 const storageStore = useStorageStore()
 const playersStore = usePlayersStore()
 const groupsStore = useGroupsStore()
+const authStore = useAuthStore()
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const showClearModal = ref(false)
 const showUploadModal = ref(false)
 const uploadError = ref('')
+const loggingOut = ref(false)
+
+async function handleLogout() {
+  loggingOut.value = true
+  try {
+    await authStore.signOut()
+    router.push('/login')
+  } catch (error) {
+    console.error('Error signing out:', error)
+  } finally {
+    loggingOut.value = false
+  }
+}
 
 function downloadData() {
   const data: AppData = {
@@ -192,6 +210,38 @@ function confirmClearData() {
           Your data is stored locally in your browser. Use the download feature to backup your data,
           and upload to restore it on another device or browser.
         </p>
+      </div>
+
+      <!-- Account Section -->
+      <div class="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-stone-200">
+          <h2 class="text-lg font-semibold text-stone-900">Account</h2>
+          <p class="text-sm text-stone-600 mt-1">Manage your account settings</p>
+        </div>
+
+        <div class="p-4">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
+              <span class="text-lg font-bold text-emerald-600">
+                {{ authStore.user?.email?.charAt(0).toUpperCase() || 'U' }}
+              </span>
+            </div>
+            <div>
+              <p class="font-medium text-stone-900">{{ authStore.user?.email }}</p>
+              <p class="text-sm text-stone-600">Signed in</p>
+            </div>
+          </div>
+
+          <BaseButton
+            variant="danger"
+            @click="handleLogout"
+            :disabled="loggingOut"
+            class="w-full flex items-center justify-center gap-2"
+          >
+            <ArrowRightOnRectangleIcon class="w-5 h-5" />
+            {{ loggingOut ? 'Signing out...' : 'Sign Out' }}
+          </BaseButton>
+        </div>
       </div>
 
       <!-- Stats -->

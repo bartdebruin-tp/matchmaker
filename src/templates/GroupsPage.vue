@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGroupsStore } from '@/stores/groups'
 import { useStorageStore } from '@/stores/storage'
+import { usePlayersStore } from '@/stores/players'
 import BottomNav from '@/organisms/BottomNav.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import GroupCard from '@/components/GroupCard.vue'
@@ -11,10 +12,22 @@ import { PlusIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
 const groupsStore = useGroupsStore()
+const playersStore = usePlayersStore()
 const storageStore = useStorageStore()
 
 const isModalOpen = ref(false)
 const editGroupId = ref<string | null>(null)
+
+onMounted(async () => {
+  try {
+    await Promise.all([
+      playersStore.fetchPlayers(),
+      groupsStore.fetchGroups()
+    ])
+  } catch (error) {
+    console.error('Error loading data:', error)
+  }
+})
 
 function openAddModal() {
   editGroupId.value = null

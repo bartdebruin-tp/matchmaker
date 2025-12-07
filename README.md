@@ -1,16 +1,46 @@
-# Vue 3.5 + TypeScript Starter Kit
+# MatchMaker - Team Matchup Generator
 
-Deze Vue.js applicatie is volledig omgezet naar TypeScript met Vue 3.5 en de Composition API. Het project demonstreert moderne Vue.js ontwikkeling met type-safe code.
+A modern Vue.js application for creating and managing player groups with random team matchup generation. Now with cloud sync via Supabase!
 
-## ✨ Kenmerken
+## ✨ Features
 
-- **Vue 3.5** met Composition API
-- **TypeScript** voor volledige type safety
-- **Pinia** voor state management met types
-- **Vite** voor snelle development
-- **TailwindCSS** voor styling
-- **Custom Composables** met TypeScript
-- **Type-safe Components** met defineProps en defineEmits
+- **Vue 3.5** with Composition API
+- **TypeScript** for full type safety
+- **Pinia** for state management
+- **Supabase** for authentication and database
+- **OAuth Login** - Google & Facebook
+- **Cloud Sync** - Your data syncs across devices
+- **Multi-user** - Each user has their own private data
+- **Vite** for fast development
+- **TailwindCSS** for beautiful styling
+- **PWA Ready** - Install as a mobile app
+
+## 🚀 Quick Start
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Set Up Supabase
+Follow the complete setup guide in **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)**
+
+Quick summary:
+1. Create a Supabase project
+2. Run the SQL schema from SUPABASE_SETUP.md
+3. Configure OAuth providers (Google, Facebook)
+4. Copy `.env.example` to `.env` and add your credentials
+
+### 3. Start Development Server
+```bash
+npm run dev
+```
+
+## 📚 Documentation
+
+- **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** - Complete database and auth setup
+- **[INTEGRATION_COMPLETE.md](INTEGRATION_COMPLETE.md)** - Integration summary and testing guide
+- **[MATCHMAKER_README.md](MATCHMAKER_README.md)** - Original app documentation
 
 ## 🏗️ Project Structuur
 

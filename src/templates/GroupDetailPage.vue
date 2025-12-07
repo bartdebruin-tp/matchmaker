@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useGroupsStore } from '@/stores/groups'
 import { usePlayersStore } from '@/stores/players'
 import { useStorageStore } from '@/stores/storage'
+import { useToast } from '@/composables/useToast'
 import { useMatchGenerator } from '@/composables/useMatchGenerator'
 import BaseButton from '@/components/BaseButton.vue'
 import BaseDivider from '@/components/BaseDivider.vue'
@@ -18,11 +19,26 @@ const router = useRouter()
 const groupsStore = useGroupsStore()
 const playersStore = usePlayersStore()
 const storageStore = useStorageStore()
+const toast = useToast()
 
 const isEditModalOpen = ref(false)
 const isAddPlayerModalOpen = ref(false)
 const isNewPlayerModalOpen = ref(false)
+const loading = ref(true)
 const { matches, generateMatches: generate } = useMatchGenerator()
+
+onMounted(async () => {
+  try {
+    await Promise.all([
+      playersStore.fetchPlayers(),
+      groupsStore.fetchGroups()
+    ])
+  } catch (error) {
+    console.error('Error loading data:', error)
+  } finally {
+    loading.value = false
+  }
+})
 
 const groupId = computed(() => route.params.id as string)
 
@@ -62,48 +78,74 @@ function openEditModal() {
   isEditModalOpen.value = true
 }
 
-function handleDelete() {
+async function handleDelete() {
   if (confirm('Are you sure you want to delete this group?')) {
-    groupsStore.deleteGroup(groupId.value)
-    storageStore.saveData()
-    router.push('/groups')
+    try {
+      await groupsStore.deleteGroup(groupId.value)
+      storageStore.saveData()
+      toast.success('Group deleted successfully')
+      router.push('/groups')
+    } catch (error) {
+      console.error('Error deleting group:', error)
+      toast.error('Failed to delete group')
+    }
   }
 }
 
-function togglePlayerActive(playerId: string) {
-  groupsStore.toggleActivePlayer(playerId)
-  storageStore.saveData()
+async function togglePlayerActive(playerId: string) {
+  try {
+    await groupsStore.toggleActivePlayer(playerId)
+    storageStore.saveData()
+  } catch (error) {
+    console.error('Error toggling player active:', error)
+  }
 }
 
-function removePlayerFromGroup(playerId: string) {
+async function removePlayerFromGroup(playerId: string) {
   if (confirm('Remove this player from the group?')) {
-    groupsStore.removePlayerFromGroup(groupId.value, playerId)
-    groupsStore.setActivePlayer(playerId, false)
-    storageStore.saveData()
+    try {
+      await groupsStore.removePlayerFromGroup(groupId.value, playerId)
+      await groupsStore.setActivePlayer(playerId, false)
+      storageStore.saveData()
+      toast.success('Player removed from group')
+    } catch (error) {
+      console.error('Error removing player:', error)
+      toast.error('Failed to remove player')
+    }
   }
 }
 
-function addPlayerToGroup(playerId: string) {
-  groupsStore.addPlayerToGroup(groupId.value, playerId)
-  storageStore.saveData()
-  // Keep modal open after adding player
+async function addPlayerToGroup(playerId: string) {
+  try {
+    await groupsStore.addPlayerToGroup(groupId.value, playerId)
+    storageStore.saveData()
+    toast.success('Player added to group')
+    // Keep modal open after adding player
+  } catch (error) {
+    console.error('Error adding player:', error)
+    toast.error('Failed to add player')
+  }
 }
 
 function handleSaved() {
   storageStore.saveData()
 }
 
-function handlePlayerCreated() {
+async function handlePlayerCreated() {
   // Get the most recently added player (the one just created)
   const players = playersStore.players
   if (players.length > 0) {
     const newPlayer = players[players.length - 1]
-    // Add the new player to the current group
-    groupsStore.addPlayerToGroup(groupId.value, newPlayer.id)
-    // Make the new player active
-    groupsStore.setActivePlayer(newPlayer.id, true)
+    try {
+      // Add the new player to the current group
+      await groupsStore.addPlayerToGroup(groupId.value, newPlayer.id)
+      // Make the new player active
+      await groupsStore.setActivePlayer(newPlayer.id, true)
+      storageStore.saveData()
+    } catch (error) {
+      console.error('Error adding new player to group:', error)
+    }
   }
-  storageStore.saveData()
 }
 
 function handleGenerateMatches() {

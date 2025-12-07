@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useGroupsStore } from '@/stores/groups'
+import { useToast } from '@/composables/useToast'
 import BaseModal from '@/components/BaseModal.vue'
 import BaseInput from '@/components/BaseInput.vue'
 import BaseButton from '@/components/BaseButton.vue'
@@ -22,9 +23,11 @@ const emit = defineEmits<{
 }>()
 
 const groupsStore = useGroupsStore()
+const toast = useToast()
 const groupName = ref('')
 const groupColor = ref('bg-emerald-500')
 const error = ref('')
+const saving = ref(false)
 
 function initializeForm() {
   if (props.editGroupId) {
@@ -40,20 +43,31 @@ function initializeForm() {
   error.value = ''
 }
 
-function handleSave() {
+async function handleSave() {
   if (!groupName.value.trim()) {
     error.value = 'Group name is required'
     return
   }
 
-  if (props.editGroupId) {
-    groupsStore.updateGroup(props.editGroupId, groupName.value.trim(), groupColor.value)
-  } else {
-    groupsStore.addGroup(groupName.value.trim(), groupColor.value)
-  }
+  saving.value = true
+  error.value = ''
 
-  emit('saved')
-  emit('close')
+  try {
+    if (props.editGroupId) {
+      await groupsStore.updateGroup(props.editGroupId, groupName.value.trim(), groupColor.value)
+      toast.success('Group updated successfully')
+    } else {
+      await groupsStore.addGroup(groupName.value.trim(), groupColor.value)
+      toast.success('Group created successfully')
+    }
+
+    emit('saved')
+    emit('close')
+  } catch (e: any) {
+    error.value = e.message || 'Failed to save group'
+  } finally {
+    saving.value = false
+  }
 }
 
 function handleClose() {
@@ -97,11 +111,11 @@ watch(() => props.isOpen, (isOpen) => {
       </div>
 
       <div class="flex gap-3">
-        <BaseButton variant="secondary" full-width @click="handleClose">
+        <BaseButton variant="secondary" full-width @click="handleClose" :disabled="saving">
           Cancel
         </BaseButton>
-        <BaseButton variant="primary" full-width @click="handleSave">
-          {{ editGroupId ? 'Update' : 'Create' }}
+        <BaseButton variant="primary" full-width @click="handleSave" :disabled="saving">
+          {{ saving ? 'Saving...' : (editGroupId ? 'Update' : 'Create') }}
         </BaseButton>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { usePlayersStore } from '@/stores/players'
 import { useGroupsStore } from '@/stores/groups'
 import { useStorageStore } from '@/stores/storage'
@@ -17,6 +17,20 @@ const router = useRouter()
 
 const isModalOpen = ref(false)
 const shouldNavigateToNewGroup = ref(false)
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    await Promise.all([
+      playersStore.fetchPlayers(),
+      groupsStore.fetchGroups()
+    ])
+  } catch (error) {
+    console.error('Error loading data:', error)
+  } finally {
+    loading.value = false
+  }
+})
 
 function handleGroupClick(groupId: string) {
   router.push(`/groups/${groupId}`)
