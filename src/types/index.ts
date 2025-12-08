@@ -11,6 +11,16 @@ export interface Group {
   name: string
   color: string
   playerIds: string[]
+  matchType: 'random' | 'scheduled'
+  createdAt: number
+}
+
+export interface SubPage {
+  id: string
+  groupId: string
+  name: string
+  date?: number
+  presentPlayerIds: string[]
   createdAt: number
 }
 

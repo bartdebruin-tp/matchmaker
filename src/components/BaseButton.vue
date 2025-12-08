@@ -19,7 +19,7 @@ const classes = computed(() => {
   const baseClasses = 'font-medium rounded-lg transition-colors duration-200 flex items-center justify-space-between gap-2'
   
   const variantClasses = {
-    primary: 'bg-emerald-600 hover:bg-emerald-700 text-white disabled:bg-emerald-300',
+    primary: 'bg-green-600 hover:bg-green-700 text-white disabled:bg-green-300',
     secondary: 'bg-stone-200 hover:bg-stone-300 text-stone-900 disabled:bg-stone-100',
     danger: 'bg-red-600 hover:bg-red-700 text-white disabled:bg-red-300'
   }

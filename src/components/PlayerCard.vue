@@ -22,7 +22,7 @@ const emit = defineEmits<{
 const cardClasses = computed(() => {
   const baseClasses = 'rounded-lg border-2 transition-all duration-200 shadow-sm'
   const activeClasses = props.isActive
-    ? 'border-emerald-500 bg-emerald-50'
+    ? 'border-green-500 bg-green-50'
     : 'border-stone-200 bg-white hover:border-stone-300'
   
   return `${baseClasses} ${activeClasses}`
@@ -41,7 +41,7 @@ const cardClasses = computed(() => {
       
       <div v-if="showActions" class="flex items-center gap-2 ml-4">
         <button
-          class="p-4 text-stone-500 hover:text-emerald-600 transition-colors"
+          class="p-4 text-stone-500 hover:text-green-600 transition-colors"
           @click="emit('edit')"
         >
           <slot name="edit-icon" />

@@ -13,6 +13,13 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+@theme {
+  --color-amber-50: #FFFCF1;
+}
+@theme {
+  --color-green-600: #0D4730;
+}
+
 .safe-area-inset-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }

@@ -11,7 +11,7 @@ A mobile-first Progressive Web App (PWA) for organizing random team matchups for
 - ✅ **Active Player Selection** - Mark players as active for match generation
 - 🎲 **Random Match Generation** - Automatically creates balanced team matchups
 - 📲 **PWA Support** - Install on your phone for native app-like experience
-- 🎨 **Beautiful UI** - Built with Tailwind CSS using emerald and stone themes
+- 🎨 **Beautiful UI** - Built with Tailwind CSS using green and stone themes
 
 ## How It Works
 
