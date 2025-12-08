@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from '@/composables/useI18n'
 import type { Group } from '@/types'
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 
 const emit = defineEmits<{
   click: []
@@ -21,7 +23,7 @@ const emit = defineEmits<{
       <div :class="['w-4 h-4 rounded-full', props.group.color]" />
       <div class="flex-1">
         <p class="font-medium text-stone-900">{{ props.group.name }}</p>
-        <p class="text-sm text-stone-500">{{ props.group.playerIds.length }} players</p>
+        <p class="text-sm text-stone-500">{{ props.group.playerIds.length }} {{ t.nav.players.toLowerCase() }}</p>
       </div>
       <slot name="chevron-icon" />
     </div>

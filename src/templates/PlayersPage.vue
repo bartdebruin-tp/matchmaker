@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import { usePlayersStore } from '@/stores/players'
 import { useStorageStore } from '@/stores/storage'
 import { useToast } from '@/composables/useToast'
@@ -9,6 +10,7 @@ import PlayerCard from '@/components/PlayerCard.vue'
 import PlayerFormModal from '@/organisms/PlayerFormModal.vue'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
+const { t } = useI18n()
 const playersStore = usePlayersStore()
 const storageStore = useStorageStore()
 const toast = useToast()
@@ -39,11 +41,11 @@ function openEditModal(playerId: string) {
 }
 
 async function handleDelete(playerId: string) {
-  if (confirm('Are you sure you want to delete this player?')) {
+  if (confirm(t.value.players.deleteMessage)) {
     try {
       await playersStore.deletePlayer(playerId)
       storageStore.saveData()
-      toast.success('Player deleted successfully')
+      toast.success(t.value.players.playerDeleted)
     } catch (error) {
       console.error('Error deleting player:', error)
       toast.error('Failed to delete player')
@@ -57,17 +59,17 @@ function handleSaved() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-50 pb-20">
+  <div class="min-h-screen bg-amber-50 pb-20">
     <div class="max-w-lg mx-auto p-4 space-y-8">
       <!-- Header -->
       <header class="flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold text-stone-900">Players</h1>
-          <p class="text-stone-600 mt-2">{{ playersStore.players.length }} total</p>
+          <h1 class="text-3xl font-bold text-stone-900">{{ t.players.title }}</h1>
+          <p class="text-stone-600 mt-2">{{ playersStore.players.length }} {{ t.common.total }}</p>
         </div>
         <BaseButton variant="primary" @click="openAddModal">
           <PlusIcon class="w-5 h-5" />
-          Add
+          {{ t.common.add }}
         </BaseButton>
       </header>
 
@@ -92,10 +94,10 @@ function handleSaved() {
 
       <!-- Empty State -->
       <div v-else class="text-center py-12">
-        <p class="text-stone-500 mb-4">No players yet</p>
+        <p class="text-stone-500 mb-4">{{ t.players.noPlayers }}</p>
         <BaseButton variant="primary" @click="openAddModal">
           <PlusIcon class="w-5 h-5" />
-          Add First Player
+          {{ t.players.createFirstPlayer }}
         </BaseButton>
       </div>
     </div>

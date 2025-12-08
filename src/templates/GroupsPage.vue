@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
 import { useGroupsStore } from '@/stores/groups'
 import { useStorageStore } from '@/stores/storage'
 import { usePlayersStore } from '@/stores/players'
@@ -10,6 +11,7 @@ import GroupCard from '@/components/GroupCard.vue'
 import GroupFormModal from '@/organisms/GroupFormModal.vue'
 import { PlusIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 
+const { t } = useI18n()
 const router = useRouter()
 const groupsStore = useGroupsStore()
 const playersStore = usePlayersStore()
@@ -44,17 +46,17 @@ function handleSaved() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-50 pb-20">
+  <div class="min-h-screen bg-amber-50 pb-20">
     <div class="max-w-lg mx-auto p-4 space-y-8">
       <!-- Header -->
       <header class="flex items-center justify-between">
         <div>
-          <h1 class="text-3xl font-bold text-stone-900">Groups</h1>
-          <p class="text-stone-600 mt-2">{{ groupsStore.groups.length }} total</p>
+          <h1 class="text-3xl font-bold text-stone-900">{{ t.groups.title }}</h1>
+          <p class="text-stone-600 mt-2">{{ groupsStore.groups.length }} {{ t.common.total }}</p>
         </div>
         <BaseButton variant="primary" @click="openAddModal">
           <PlusIcon class="w-5 h-5" />
-          Add
+          {{ t.common.add }}
         </BaseButton>
       </header>
 
@@ -74,10 +76,10 @@ function handleSaved() {
 
       <!-- Empty State -->
       <div v-else class="text-center py-12">
-        <p class="text-stone-500 mb-4">No groups yet</p>
+        <p class="text-stone-500 mb-4">{{ t.groups.noGroups }}</p>
         <BaseButton variant="primary" @click="openAddModal">
           <PlusIcon class="w-5 h-5" />
-          Create First Group
+          {{ t.groups.createFirstGroup }}
         </BaseButton>
       </div>
     </div>

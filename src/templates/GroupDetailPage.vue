@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
 import { useGroupsStore } from '@/stores/groups'
 import { usePlayersStore } from '@/stores/players'
 import { useSubPagesStore } from '@/stores/subPages'
@@ -15,6 +16,7 @@ import PlayerFormModal from '@/organisms/PlayerFormModal.vue'
 import MatchCard from '@/organisms/MatchCard.vue'
 import { ArrowLeftIcon, PencilIcon, TrashIcon, PlusIcon, UserPlusIcon, ArrowPathIcon, CalendarIcon, CheckIcon } from '@heroicons/vue/24/outline'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const groupsStore = useGroupsStore()
@@ -101,15 +103,15 @@ function openEditModal() {
 }
 
 async function handleDelete() {
-  if (confirm('Are you sure you want to delete this group?')) {
+  if (confirm(t.value.groups.deleteMessage)) {
     try {
       await groupsStore.deleteGroup(groupId.value)
       storageStore.saveData()
-      toast.success('Group deleted successfully')
+      toast.success(t.value.groups.groupDeleted)
       router.push('/groups')
     } catch (error) {
       console.error('Error deleting group:', error)
-      toast.error('Failed to delete group')
+      toast.error(t.value.errors.deleteFailed)
     }
   }
 }
@@ -124,15 +126,15 @@ async function togglePlayerActive(playerId: string) {
 }
 
 async function removePlayerFromGroup(playerId: string) {
-  if (confirm('Remove this player from the group?')) {
+  if (confirm(t.value.players.deleteMessage)) {
     try {
       await groupsStore.removePlayerFromGroup(groupId.value, playerId)
       await groupsStore.setActivePlayer(playerId, false)
       storageStore.saveData()
-      toast.success('Player removed from group')
+      toast.success(t.value.players.playerDeleted)
     } catch (error) {
       console.error('Error removing player:', error)
-      toast.error('Failed to remove player')
+      toast.error(t.value.errors.deleteFailed)
     }
   }
 }
@@ -141,11 +143,11 @@ async function addPlayerToGroup(playerId: string) {
   try {
     await groupsStore.addPlayerToGroup(groupId.value, playerId)
     storageStore.saveData()
-    toast.success('Player added to group')
+    toast.success(t.value.players.playerAdded)
     // Keep modal open after adding player
   } catch (error) {
     console.error('Error adding player:', error)
-    toast.error('Failed to add player')
+    toast.error(t.value.errors.saveFailed)
   }
 }
 
@@ -176,19 +178,19 @@ function handleGenerateMatches() {
 
 async function createSubPage() {
   if (!newSubPageName.value.trim()) {
-    toast.error('Please enter a session name')
+    toast.error(t.value.errors.requiredField)
     return
   }
 
   try {
     await subPagesStore.addSubPage(groupId.value, newSubPageName.value.trim())
     storageStore.saveData()
-    toast.success('Session created successfully')
+    toast.success(t.value.groupDetail.subPageAdded)
     newSubPageName.value = ''
     isCreateSubPageModalOpen.value = false
   } catch (error) {
     console.error('Error creating sub-page:', error)
-    toast.error('Failed to create session')
+    toast.error(t.value.errors.saveFailed)
   }
 }
 
@@ -208,28 +210,28 @@ async function togglePlayerPresence(playerId: string) {
     storageStore.saveData()
   } catch (error) {
     console.error('Error toggling player presence:', error)
-    toast.error('Failed to update attendance')
+    toast.error(t.value.errors.saveFailed)
   }
 }
 
 async function deleteSubPage(subPageId: string) {
-  if (confirm('Are you sure you want to delete this session?')) {
+  if (confirm(t.value.groupDetail.deleteSubPage + '?')) {
     try {
       await subPagesStore.deleteSubPage(subPageId)
       storageStore.saveData()
-      toast.success('Session deleted successfully')
+      toast.success(t.value.groupDetail.subPageDeleted)
       if (selectedSubPageId.value === subPageId) {
         selectedSubPageId.value = null
       }
     } catch (error) {
       console.error('Error deleting sub-page:', error)
-      toast.error('Failed to delete session')
+      toast.error(t.value.errors.deleteFailed)
     }
   }
 }
 
 function formatDate(timestamp?: number): string {
-  if (!timestamp) return 'No date set'
+  if (!timestamp) return t.value.groupDetail.selectDate
   return new Date(timestamp).toLocaleDateString()
 }
 
@@ -241,7 +243,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="group" class="min-h-screen bg-stone-50 pb-8">
+  <div v-if="group" class="min-h-screen bg-amber-50 pb-8">
       <!-- Header -->
       <header class="bg-white border-b border-stone-200 p-4 sticky top-0 z-10">
         <div class="flex items-center gap-3 mb-4">
@@ -261,12 +263,12 @@ onMounted(() => {
         <!-- Stats -->
         <div class="grid grid-cols-2 gap-4">
           <div class="bg-white rounded-lg p-4 border border-stone-200 shadow-sm">
-            <p class="text-sm text-stone-600 mb-1">Total Players</p>
+            <p class="text-sm text-stone-600 mb-1">{{ t.players.totalPlayers }}</p>
             <p class="text-2xl font-bold text-stone-900">{{ groupPlayers.length }}</p>
           </div>
           <div class="bg-white rounded-lg p-4 border border-stone-200 shadow-sm">
-            <p class="text-sm text-stone-600 mb-1">Active</p>
-            <p class="text-2xl font-bold text-emerald-600">{{ activeCount }}</p>
+            <p class="text-sm text-stone-600 mb-1">{{ t.players.active }}</p>
+            <p class="text-2xl font-bold text-green-600">{{ activeCount }}</p>
           </div>
         </div>
 
@@ -281,12 +283,12 @@ onMounted(() => {
             @click="handleGenerateMatches"
           >
             <ArrowPathIcon class="w-5 h-5" />
-            Generate Matches
+            {{ t.groupDetail.generateMatches }}
           </BaseButton>
 
           <!-- Matches -->
           <div v-if="matches.length > 0" class="space-y-5 mt-4">
-            <h2 class="text-lg font-semibold text-stone-900 mb-1">Generated Matches</h2>
+            <h2 class="text-lg font-semibold text-stone-900 mb-1">{{ t.groupDetail.matches }}</h2>
             <MatchCard
               v-for="(match, index) in matches"
               :key="match.id"
@@ -307,7 +309,7 @@ onMounted(() => {
               @click="isCreateSubPageModalOpen = true"
             >
               <PlusIcon class="w-4 h-4" />
-              New Session
+              {{ t.groupDetail.addSubPage }}
             </BaseButton>
           </div>
 
@@ -316,7 +318,7 @@ onMounted(() => {
             <button
               v-for="subPage in subPages"
               :key="subPage.id"
-              class="w-full p-4 text-left rounded-lg border border-stone-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-sm"
+              class="w-full p-4 text-left rounded-lg bg-white border border-stone-200 hover:border-green-500 hover:bg-green-50 transition-all shadow-sm"
               @click="openSubPage(subPage.id)"
             >
               <div class="flex items-center justify-between">
@@ -329,7 +331,7 @@ onMounted(() => {
                 </div>
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-stone-600">{{ subPage.presentPlayerIds.length }} / {{ groupPlayers.length }}</span>
-                  <CheckIcon class="w-5 h-5 text-emerald-600" />
+                  <CheckIcon class="w-5 h-5 text-green-600" />
                 </div>
               </div>
             </button>
@@ -338,14 +340,14 @@ onMounted(() => {
           <!-- Empty State -->
           <div v-else class="text-center py-12 bg-white rounded-lg border border-stone-200">
             <CalendarIcon class="w-12 h-12 mx-auto text-stone-300 mb-3" />
-            <p class="text-stone-500">No sessions yet</p>
-            <p class="text-sm text-stone-400 mt-1">Create a session to track attendance</p>
+            <p class="text-stone-500">{{ t.groupDetail.noSubPages }}</p>
+            <p class="text-sm text-stone-400 mt-1">{{ t.groupDetail.createFirstSubPage }}</p>
           </div>
         </div>
 
         <!-- Players in Group -->
         <div v-if="groupPlayers.length > 0">
-          <h2 class="text-lg font-semibold text-stone-900 mb-4">Players</h2>
+          <h2 class="text-lg font-semibold text-stone-900 mb-4">{{ t.players.title }}</h2>
           <div class="space-y-2">
             <PlayerCard
               v-for="player in groupPlayers"
@@ -370,7 +372,7 @@ onMounted(() => {
 
         <!-- Empty State -->
         <div v-else class="text-center py-12">
-          <p class="text-stone-500">No players in this group yet</p>
+          <p class="text-stone-500">{{ t.players.noPlayers }}</p>
         </div>
 
           <div class="mt-4 flex flex-row gap-4">
@@ -381,7 +383,7 @@ onMounted(() => {
               @click="isNewPlayerModalOpen = true"
             >
               <PlusIcon class="w-5 h-5" />
-              Create Player
+              {{ t.players.addPlayer }}
             </BaseButton>
             <!-- Add Player Button -->
             <BaseButton
@@ -391,7 +393,7 @@ onMounted(() => {
             @click="isAddPlayerModalOpen = true"
             >
             <UserPlusIcon class="w-5 h-5" />
-            Add Player
+            {{ t.players.addPlayer }}
             </BaseButton>
           </div>
         <BaseDivider />
@@ -399,11 +401,11 @@ onMounted(() => {
         <div class="flex gap-2">
           <BaseButton variant="secondary" size="sm" @click="openEditModal">
             <PencilIcon class="w-4 h-4" />
-            Edit
+            {{ t.common.edit }}
           </BaseButton>
           <BaseButton variant="danger" size="sm" @click="handleDelete">
             <TrashIcon class="w-4 h-4" />
-            Delete
+            {{ t.common.delete }}
           </BaseButton>
         </div>
       </div>
@@ -430,7 +432,7 @@ onMounted(() => {
     >
       <div class="w-full h-full max-w-lg bg-white shadow-xl overflow-hidden flex flex-col">
         <div class="flex items-center justify-between p-4 border-b border-stone-200">
-          <h2 class="text-lg font-semibold text-stone-900">Add Player</h2>
+          <h2 class="text-lg font-semibold text-stone-900">{{ t.players.addPlayer }}</h2>
           <button
             class="p-1 text-stone-500 hover:text-stone-700 transition-colors"
             @click="isAddPlayerModalOpen = false"
@@ -444,13 +446,13 @@ onMounted(() => {
           <button
             v-for="player in availablePlayers"
             :key="player.id"
-            class="w-full p-4 text-left rounded-lg border border-stone-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-sm"
+            class="w-full p-4 text-left rounded-lg border border-stone-200 hover:border-green-500 hover:bg-green-50 transition-all shadow-sm"
             @click="addPlayerToGroup(player.id)"
           >
             <p class="font-medium text-stone-900">{{ player.name }}</p>
           </button>
           <p v-if="availablePlayers.length === 0" class="text-center text-stone-500 py-8">
-            All players are already in this group
+            {{ t.players.noPlayers }}
           </p>
         </div>
       </div>
@@ -464,7 +466,7 @@ onMounted(() => {
     >
       <div class="w-full max-w-md bg-white rounded-lg shadow-xl p-6">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-semibold text-stone-900">Create Session</h2>
+          <h2 class="text-lg font-semibold text-stone-900">{{ t.groupDetail.addSubPage }}</h2>
           <button
             class="p-1 text-stone-500 hover:text-stone-700 transition-colors"
             @click="isCreateSubPageModalOpen = false"
@@ -476,21 +478,21 @@ onMounted(() => {
         </div>
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-stone-700 mb-2">Session Name</label>
+            <label class="block text-sm font-medium text-stone-700 mb-2">{{ t.groupDetail.subPageName }}</label>
             <input
               v-model="newSubPageName"
               type="text"
-              placeholder="e.g., Week 1, Round 1"
-              class="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              :placeholder="t.groupDetail.subPageName"
+              class="w-full px-3 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
               @keyup.enter="createSubPage"
             />
           </div>
           <div class="flex gap-3">
             <BaseButton variant="secondary" full-width @click="isCreateSubPageModalOpen = false">
-              Cancel
+              {{ t.common.cancel }}
             </BaseButton>
             <BaseButton variant="primary" full-width @click="createSubPage">
-              Create
+              {{ t.common.add }}
             </BaseButton>
           </div>
         </div>
@@ -539,7 +541,7 @@ onMounted(() => {
               class="w-full p-4 text-left rounded-lg border transition-all shadow-sm"
               :class="[
                 selectedSubPage.presentPlayerIds.includes(player.id)
-                  ? 'border-emerald-500 bg-emerald-50'
+                  ? 'border-green-500 bg-green-50'
                   : 'border-stone-200 hover:border-stone-300'
               ]"
               @click="togglePlayerPresence(player.id)"
@@ -548,7 +550,7 @@ onMounted(() => {
                 <p class="font-medium text-stone-900">{{ player.name }}</p>
                 <CheckIcon
                   v-if="selectedSubPage.presentPlayerIds.includes(player.id)"
-                  class="w-5 h-5 text-emerald-600"
+                  class="w-5 h-5 text-green-600"
                 />
               </div>
             </button>

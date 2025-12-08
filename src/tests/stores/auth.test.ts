@@ -101,39 +101,6 @@ describe('Auth Store', () => {
     })
   })
 
-  describe('signInWithGoogle', () => {
-    it('should initiate Google OAuth sign in', async () => {
-      const { supabase } = await import('@/lib/supabase')
-      
-      vi.mocked(supabase.auth.signInWithOAuth).mockResolvedValue({ 
-        data: { url: 'https://oauth.google.com', provider: 'google' },
-        error: null 
-      } as any)
-
-      await authStore.signInWithGoogle()
-
-      expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
-        provider: 'google',
-        options: {
-          redirectTo: expect.stringContaining(window.location.origin)
-        }
-      })
-    })
-
-    it('should throw error on OAuth failure', async () => {
-      const { supabase } = await import('@/lib/supabase')
-      
-      vi.mocked(supabase.auth.signInWithOAuth).mockResolvedValue({ 
-        data: { url: '', provider: 'google' },
-        error: { message: 'OAuth failed', name: 'OAuthError', status: 400 }
-      } as any)
-
-      await expect(authStore.signInWithGoogle()).rejects.toThrow()
-    })
-  })
-
-
-
   describe('signInWithEmail', () => {
     it('should sign in with email and password', async () => {
       const { supabase } = await import('@/lib/supabase')

@@ -1,15 +1,18 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
 import { HomeIcon, UsersIcon, UserGroupIcon, Cog6ToothIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
+const { t } = useI18n()
 
-const navItems = [
-  { name: 'Home', icon: HomeIcon, path: '/' },
-  { name: 'Players', icon: UsersIcon, path: '/players' },
-  { name: 'Groups', icon: UserGroupIcon, path: '/groups' },
-  { name: 'Settings', icon: Cog6ToothIcon, path: '/settings' }
-]
+const navItems = computed(() => [
+  { name: t.value.nav.home, icon: HomeIcon, path: '/' },
+  { name: t.value.nav.players, icon: UsersIcon, path: '/players' },
+  { name: t.value.nav.groups, icon: UserGroupIcon, path: '/groups' },
+  { name: t.value.nav.settings, icon: Cog6ToothIcon, path: '/settings' }
+])
 
 function isActive(path: string): boolean {
   return router.currentRoute.value.path === path
@@ -24,7 +27,7 @@ function isActive(path: string): boolean {
         :key="item.path"
         :class="[
           'flex flex-col items-center justify-center gap-1 px-4 py-2 transition-colors duration-200',
-          isActive(item.path) ? 'text-emerald-600' : 'text-stone-500 hover:text-stone-700'
+          isActive(item.path) ? 'text-green-600' : 'text-stone-500 hover:text-stone-700'
         ]"
         @click="router.push(item.path)"
       >

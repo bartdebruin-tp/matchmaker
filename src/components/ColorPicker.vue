@@ -41,7 +41,7 @@ const tailwindColors = [
       :class="[
         'w-10 h-10 rounded-full transition-all duration-200',
         color,
-        props.modelValue === color ? 'ring-4 ring-emerald-500 ring-offset-2' : 'hover:scale-110'
+        props.modelValue === color ? 'ring-4 ring-green-500 ring-offset-2' : 'hover:scale-110'
       ]"
       @click="emit('update:modelValue', color)"
     />

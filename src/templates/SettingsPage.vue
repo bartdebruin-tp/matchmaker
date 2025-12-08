@@ -1,18 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { usePlayersStore } from '@/stores/players'
-import { useGroupsStore } from '@/stores/groups'
+import { useI18n } from '@/composables/useI18n'
 import { useAuthStore } from '@/stores/auth'
 import BottomNav from '@/organisms/BottomNav.vue'
 import BaseButton from '@/components/BaseButton.vue'
-import { 
-  ArrowRightOnRectangleIcon 
-} from '@heroicons/vue/24/outline'
+import { ArrowRightEndOnRectangleIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()
-const playersStore = usePlayersStore()
-const groupsStore = useGroupsStore()
+const { t, locale, availableLocales, setLocale } = useI18n()
 const authStore = useAuthStore()
 
 const loggingOut = ref(false)
@@ -31,31 +27,56 @@ async function handleLogout() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-stone-50 pb-24">
+  <div class="min-h-screen bg-amber-50 pb-20">
     <div class="max-w-lg mx-auto p-6 space-y-8">
       <!-- Header -->
       <header>
-        <h1 class="text-3xl font-bold text-stone-900">Settings</h1>
-        <p class="text-stone-600 mt-2">Manage your account and preferences</p>
+        <h1 class="text-3xl font-bold text-stone-900">{{ t.settings.title }}</h1>
+        <p class="text-stone-600 mt-2">{{ t.settings.general }}</p>
       </header>
+
+      <!-- Language Section -->
+      <div class="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-stone-200">
+          <h2 class="text-lg font-semibold text-stone-900">{{ t.settings.language }}</h2>
+          <p class="text-sm text-stone-600 mt-1">{{ t.settings.selectLanguage }}</p>
+        </div>
+        <div class="p-4 space-y-2">
+          <button
+            v-for="lang in availableLocales"
+            :key="lang.code"
+            @click="setLocale(lang.code)"
+            :class="[
+              'w-full px-4 py-3 rounded-lg border-2 text-left flex items-center gap-3 transition-colors',
+              locale === lang.code
+                ? 'border-green-500 bg-green-50 text-green-700'
+                : 'border-stone-200 hover:border-stone-300 text-stone-700'
+            ]"
+          >
+            <span class="text-2xl">{{ lang.flag }}</span>
+            <span class="font-medium">{{ lang.name }}</span>
+            <span v-if="locale === lang.code" class="ml-auto text-green-600">✓</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Account Section -->
       <div class="bg-white rounded-xl border border-stone-200 shadow-sm overflow-hidden">
         <div class="p-4 border-b border-stone-200">
-          <h2 class="text-lg font-semibold text-stone-900">Account</h2>
-          <p class="text-sm text-stone-600 mt-1">Manage your account settings</p>
+          <h2 class="text-lg font-semibold text-stone-900">{{ t.settings.account }}</h2>
+          <p class="text-sm text-stone-600 mt-1">{{ t.settings.profile }}</p>
         </div>
 
         <div class="p-4">
           <div class="flex items-center gap-3 mb-4">
-            <div class="w-12 h-12 rounded-full bg-emerald-100 flex items-center justify-center">
-              <span class="text-lg font-bold text-emerald-600">
+            <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+              <span class="text-lg font-bold text-green-600">
                 {{ authStore.user?.email?.charAt(0).toUpperCase() || 'U' }}
               </span>
             </div>
             <div>
               <p class="font-medium text-stone-900">{{ authStore.user?.email }}</p>
-              <p class="text-sm text-stone-600">Signed in</p>
+              <p class="text-sm text-stone-600">{{ t.settings.signedInAs }}</p>
             </div>
           </div>
 
@@ -65,25 +86,12 @@ async function handleLogout() {
             :disabled="loggingOut"
             class="w-full flex items-center justify-center gap-2"
           >
-            <ArrowRightOnRectangleIcon class="w-5 h-5" />
-            {{ loggingOut ? 'Signing out...' : 'Sign Out' }}
+            <ArrowRightEndOnRectangleIcon class="w-5 h-5" />
+            {{ loggingOut ? t.common.loading : t.auth.signOut }}
           </BaseButton>
         </div>
       </div>
-
-      <!-- Stats -->
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-white rounded-xl p-4 border border-stone-200 shadow-sm">
-          <p class="text-sm text-stone-600 mb-1">Total Players</p>
-          <p class="text-2xl font-bold text-stone-900">{{ playersStore.players.length }}</p>
-        </div>
-        <div class="bg-white rounded-xl p-4 border border-stone-200 shadow-sm">
-          <p class="text-sm text-stone-600 mb-1">Total Groups</p>
-          <p class="text-2xl font-bold text-stone-900">{{ groupsStore.groups.length }}</p>
-        </div>
-      </div>
     </div>
-
     <BottomNav />
   </div>
 </template>

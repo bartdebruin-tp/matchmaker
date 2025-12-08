@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-linear-to-br from-emerald-50 to-teal-50 px-4">
+  <div class="min-h-screen flex items-center justify-center bg-amber-50 px-4">
     <div class="max-w-md w-full">
       <!-- Logo and Title -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-emerald-600 mb-2">MatchMaker</h1>
-        <p class="text-gray-600">Sign in to your personal dashboard</p>
+        <img src="/app-logo.png" alt="MatchMaker Logo" class="w-40 h-40 mx-auto mb-4" />        
+        <p class="text-gray-600">{{ t.auth.signInToDashboard }}</p>
       </div>
 
       <!-- Login Card -->
@@ -25,26 +25,26 @@
         <!-- Email Form -->
         <form @submit.prevent="handleEmailAuth" class="space-y-4">
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">{{ t.auth.email }}</label>
             <input
               id="email"
               v-model="email"
               type="email"
               required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               placeholder="you@example.com"
             />
           </div>
 
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">{{ t.auth.password }}</label>
             <input
               id="password"
               v-model="password"
               type="password"
               required
               :minlength="isSignUp ? 6 : undefined"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               placeholder="••••••••"
             />
           </div>
@@ -52,9 +52,9 @@
           <button
             type="submit"
             :disabled="loading"
-            class="w-full bg-emerald-600 text-white py-3 rounded-lg font-medium hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {{ loading ? 'Please wait...' : (isSignUp ? 'Sign Up' : 'Sign In') }}
+            {{ loading ? t.auth.pleaseWait : (isSignUp ? t.auth.signUp : t.auth.signIn) }}
           </button>
         </form>
 
@@ -62,9 +62,9 @@
         <div class="mt-4 text-center">
           <button
             @click="toggleMode"
-            class="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
+            class="text-sm text-green-600 hover:text-green-700 font-medium"
           >
-            {{ isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up" }}
+            {{ isSignUp ? t.auth.alreadyHaveAccount : t.auth.dontHaveAccount }}
           </button>
         </div>
 
@@ -74,24 +74,25 @@
             @click="showResetPassword = true"
             class="text-sm text-gray-600 hover:text-gray-700"
           >
-            Forgot password?
+            {{ t.auth.forgotPassword }}
           </button>
         </div>
       </div>
     </div>
 
     <!-- Reset Password Modal -->
-    <BaseModal :isOpen="showResetPassword" title="Reset Password" @close="showResetPassword = false">
+    <BaseModal :isOpen="showResetPassword" :title="t.auth.resetPassword" @close="showResetPassword = false">
       <div class="p-6">
         <form @submit.prevent="handleResetPassword" class="space-y-4">
           <div>
-            <label for="reset-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label for="reset-email" class="block text-sm font-medium text-gray-700 mb-1">{{ t.auth.email }}</label>
             <input
               id="reset-email"
               v-model="resetEmail"
               type="email"
               required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none"
+              autofocus
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
               placeholder="you@example.com"
             />
           </div>
@@ -101,14 +102,14 @@
               @click="showResetPassword = false"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              Cancel
+              {{ t.common.cancel }}
             </button>
             <button
               type="submit"
               :disabled="loading"
-              class="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50"
+              class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
             >
-              Send Reset Link
+              {{ t.auth.sendResetLink }}
             </button>
           </div>
         </form>
@@ -121,8 +122,10 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
 import BaseModal from '@/components/BaseModal.vue'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const router = useRouter()
 
@@ -149,13 +152,13 @@ const handleEmailAuth = async () => {
   try {
     if (isSignUp.value) {
       await authStore.signUpWithEmail(email.value, password.value)
-      successMessage.value = 'Check your email for the confirmation link!'
+      successMessage.value = t.value.auth.confirmationLinkSent
     } else {
       await authStore.signInWithEmail(email.value, password.value)
       router.push('/')
     }
   } catch (e: any) {
-    error.value = e.message || `Failed to ${isSignUp.value ? 'sign up' : 'sign in'}`
+    error.value = e.message || t.value.errors[isSignUp.value ? 'signUpFailed' : 'signInFailed']
   } finally {
     loading.value = false
   }
@@ -168,11 +171,11 @@ const handleResetPassword = async () => {
   
   try {
     await authStore.resetPassword(resetEmail.value)
-    successMessage.value = 'Password reset link sent! Check your email.'
+    successMessage.value = t.value.auth.resetLinkSent
     showResetPassword.value = false
     resetEmail.value = ''
   } catch (e: any) {
-    error.value = e.message || 'Failed to send reset link'
+    error.value = e.message || t.value.errors.saveFailed
   } finally {
     loading.value = false
   }
