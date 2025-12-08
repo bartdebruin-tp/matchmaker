@@ -230,11 +230,6 @@ async function deleteSubPage(subPageId: string) {
   }
 }
 
-function formatDate(timestamp?: number): string {
-  if (!timestamp) return t.value.groupDetail.selectDate
-  return new Date(timestamp).toLocaleDateString()
-}
-
 onMounted(() => {
   if (!group.value) {
     router.push('/groups')
@@ -260,17 +255,6 @@ onMounted(() => {
     <div class="max-w-lg mx-auto">
 
       <div class="p-4 space-y-4">
-        <!-- Stats -->
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-white rounded-lg p-4 border border-stone-200 shadow-sm">
-            <p class="text-sm text-stone-600 mb-1">{{ t.players.totalPlayers }}</p>
-            <p class="text-2xl font-bold text-stone-900">{{ groupPlayers.length }}</p>
-          </div>
-          <div class="bg-white rounded-lg p-4 border border-stone-200 shadow-sm">
-            <p class="text-sm text-stone-600 mb-1">{{ t.players.active }}</p>
-            <p class="text-2xl font-bold text-green-600">{{ activeCount }}</p>
-          </div>
-        </div>
 
         <!-- Random Matches Mode -->
         <div v-if="!isScheduledGroup">
@@ -326,7 +310,6 @@ onMounted(() => {
                   <CalendarIcon class="w-5 h-5 text-stone-500" />
                   <div>
                     <p class="font-medium text-stone-900">{{ subPage.name }}</p>
-                    <p class="text-sm text-stone-500">{{ formatDate(subPage.date) }}</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -347,7 +330,7 @@ onMounted(() => {
 
         <!-- Players in Group -->
         <div v-if="groupPlayers.length > 0">
-          <h2 class="text-lg font-semibold text-stone-900 mb-4">{{ t.players.title }}</h2>
+          <h2 class="text-lg font-semibold text-stone-900 mb-4">{{ t.players.title }} ({{ activeCount }} {{ t.players.active }})</h2>
           <div class="space-y-2">
             <PlayerCard
               v-for="player in groupPlayers"
@@ -366,8 +349,6 @@ onMounted(() => {
               </template>
             </PlayerCard>
           </div>
-          
-          
         </div>
 
         <!-- Empty State -->
@@ -383,7 +364,7 @@ onMounted(() => {
               @click="isNewPlayerModalOpen = true"
             >
               <PlusIcon class="w-5 h-5" />
-              {{ t.players.addPlayer }}
+              {{ t.players.newPlayer }}
             </BaseButton>
             <!-- Add Player Button -->
             <BaseButton
@@ -509,7 +490,6 @@ onMounted(() => {
         <div class="flex items-center justify-between p-4 border-b border-stone-200">
           <div>
             <h2 class="text-lg font-semibold text-stone-900">{{ selectedSubPage.name }}</h2>
-            <p class="text-sm text-stone-500">{{ formatDate(selectedSubPage.date) }}</p>
           </div>
           <div class="flex items-center gap-2">
             <button

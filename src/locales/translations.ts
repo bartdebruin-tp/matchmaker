@@ -70,6 +70,7 @@ export interface Translations {
   players: {
     title: string
     addPlayer: string
+    newPlayer: string
     editPlayer: string
     deletePlayer: string
     playerName: string
@@ -268,7 +269,8 @@ export const translations: Record<Locale, Translations> = {
     },
     players: {
       title: 'Players',
-      addPlayer: 'Add Player',
+      addPlayer: 'Add',
+      newPlayer: 'New',
       editPlayer: 'Edit Player',
       deletePlayer: 'Delete Player',
       playerName: 'Player Name',
@@ -453,7 +455,8 @@ export const translations: Record<Locale, Translations> = {
     },
     players: {
       title: 'Spelers',
-      addPlayer: 'Speler Toevoegen',
+      addPlayer: 'Toevoegen',
+      newPlayer: 'Nieuw',
       editPlayer: 'Speler Bewerken',
       deletePlayer: 'Speler Verwijderen',
       playerName: 'Speler Naam',
