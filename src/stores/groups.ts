@@ -44,15 +44,16 @@ export const useGroupsStore = defineStore('groups', () => {
       if (groupPlayersError) throw groupPlayersError
 
       // Build groups with player IDs
-      groups.value = (groupsData || []).map(g => {
+      groups.value = (groupsData || []).map((g: any) => {
         const playerIds = (groupPlayersData || [])
-          .filter(gp => gp.group_id === g.id)
-          .map(gp => gp.player_id)
+          .filter((gp: any) => gp.group_id === g.id)
+          .map((gp: any) => gp.player_id)
 
         return {
           id: g.id,
           name: g.name,
           color: g.color,
+          matchType: (g.match_type || 'random') as 'random' | 'scheduled',
           playerIds,
           createdAt: new Date(g.created_at).getTime()
         }
@@ -66,7 +67,7 @@ export const useGroupsStore = defineStore('groups', () => {
 
       if (activePlayersError) throw activePlayersError
 
-      activePlayerIds.value = new Set((activePlayersData || []).map(ap => ap.player_id))
+      activePlayerIds.value = new Set((activePlayersData || []).map((ap: any) => ap.player_id))
     } catch (error) {
       console.error('Error fetching groups:', error)
       throw error
@@ -75,7 +76,7 @@ export const useGroupsStore = defineStore('groups', () => {
     }
   }
 
-  async function addGroup(name: string, color: string): Promise<Group> {
+  async function addGroup(name: string, color: string, matchType: 'random' | 'scheduled' = 'random'): Promise<Group> {
     const authStore = useAuthStore()
     if (!authStore.user) throw new Error('Not authenticated')
 
@@ -83,6 +84,7 @@ export const useGroupsStore = defineStore('groups', () => {
       id: crypto.randomUUID(),
       name,
       color,
+      matchType,
       playerIds: [],
       createdAt: Date.now()
     }
@@ -95,8 +97,9 @@ export const useGroupsStore = defineStore('groups', () => {
           user_id: authStore.user.id,
           name: group.name,
           color: group.color,
+          match_type: group.matchType,
           created_at: new Date(group.createdAt).toISOString()
-        })
+        } as any)
 
       if (error) throw error
 
@@ -108,14 +111,14 @@ export const useGroupsStore = defineStore('groups', () => {
     }
   }
 
-  async function updateGroup(id: string, name: string, color: string): Promise<void> {
+  async function updateGroup(id: string, name: string, color: string, matchType: 'random' | 'scheduled' = 'random'): Promise<void> {
     const authStore = useAuthStore()
     if (!authStore.user) throw new Error('Not authenticated')
 
     try {
-      const { error } = await supabase
-        .from('groups')
-        .update({ name, color })
+      const { error } = await (supabase
+        .from('groups') as any)
+        .update({ name, color, match_type: matchType })
         .eq('id', id)
         .eq('user_id', authStore.user.id)
 
@@ -125,6 +128,7 @@ export const useGroupsStore = defineStore('groups', () => {
       if (group) {
         group.name = name
         group.color = color
+        group.matchType = matchType
       }
     } catch (error) {
       console.error('Error updating group:', error)
@@ -169,7 +173,7 @@ export const useGroupsStore = defineStore('groups', () => {
           id: crypto.randomUUID(),
           group_id: groupId,
           player_id: playerId
-        })
+        } as any)
 
       if (error) throw error
 
@@ -225,7 +229,7 @@ export const useGroupsStore = defineStore('groups', () => {
             id: crypto.randomUUID(),
             user_id: authStore.user.id,
             player_id: playerId
-          })
+          } as any)
 
         if (error) throw error
         activePlayerIds.value.add(playerId)

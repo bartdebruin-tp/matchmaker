@@ -26,6 +26,7 @@ const groupsStore = useGroupsStore()
 const toast = useToast()
 const groupName = ref('')
 const groupColor = ref('bg-emerald-500')
+const matchType = ref<'random' | 'scheduled'>('random')
 const error = ref('')
 const saving = ref(false)
 
@@ -35,10 +36,12 @@ function initializeForm() {
     if (group) {
       groupName.value = group.name
       groupColor.value = group.color
+      matchType.value = group.matchType
     }
   } else {
     groupName.value = ''
     groupColor.value = 'bg-emerald-500'
+    matchType.value = 'random'
   }
   error.value = ''
 }
@@ -54,10 +57,10 @@ async function handleSave() {
 
   try {
     if (props.editGroupId) {
-      await groupsStore.updateGroup(props.editGroupId, groupName.value.trim(), groupColor.value)
+      await groupsStore.updateGroup(props.editGroupId, groupName.value.trim(), groupColor.value, matchType.value)
       toast.success('Group updated successfully')
     } else {
-      await groupsStore.addGroup(groupName.value.trim(), groupColor.value)
+      await groupsStore.addGroup(groupName.value.trim(), groupColor.value, matchType.value)
       toast.success('Group created successfully')
     }
 
@@ -108,6 +111,38 @@ watch(() => props.isOpen, (isOpen) => {
           v-model="groupColor"
           :colors="[]"
         />
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-stone-700 mb-3">
+          Match Type
+        </label>
+        <div class="space-y-2">
+          <label class="flex items-center p-3 border border-stone-200 rounded-lg cursor-pointer hover:bg-stone-50 transition-colors">
+            <input 
+              type="radio" 
+              v-model="matchType" 
+              value="random" 
+              class="w-4 h-4 text-emerald-600 focus:ring-emerald-500"
+            />
+            <div class="ml-3">
+              <div class="text-sm font-medium text-stone-900">Random Matches</div>
+              <div class="text-xs text-stone-500">Generate random match pairings</div>
+            </div>
+          </label>
+          <label class="flex items-center p-3 border border-stone-200 rounded-lg cursor-pointer hover:bg-stone-50 transition-colors">
+            <input 
+              type="radio" 
+              v-model="matchType" 
+              value="scheduled" 
+              class="w-4 h-4 text-emerald-600 focus:ring-emerald-500"
+            />
+            <div class="ml-3">
+              <div class="text-sm font-medium text-stone-900">Scheduled</div>
+              <div class="text-xs text-stone-500">Track attendance across multiple sessions</div>
+            </div>
+          </label>
+        </div>
       </div>
 
       <div class="flex gap-3">

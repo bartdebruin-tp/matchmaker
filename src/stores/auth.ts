@@ -29,25 +29,25 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  async function signInWithGoogle() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`
-      }
-    })
-    if (error) throw error
-  }
+  // async function signInWithGoogle() {
+  //   const { error } = await supabase.auth.signInWithOAuth({
+  //     provider: 'google',
+  //     options: {
+  //       redirectTo: `${window.location.origin}/`
+  //     }
+  //   })
+  //   if (error) throw error
+  // }
 
-  async function signInWithFacebook() {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: {
-        redirectTo: `${window.location.origin}/`
-      }
-    })
-    if (error) throw error
-  }
+  // async function signInWithFacebook() {
+  //   const { error } = await supabase.auth.signInWithOAuth({
+  //     provider: 'facebook',
+  //     options: {
+  //       redirectTo: `${window.location.origin}/`
+  //     }
+  //   })
+  //   if (error) throw error
+  // }
 
   async function signInWithEmail(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -88,8 +88,8 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     isAuthenticated,
     initialize,
-    signInWithGoogle,
-    signInWithFacebook,
+    //signInWithGoogle,
+    //signInWithFacebook,
     signInWithEmail,
     signUpWithEmail,
     signOut,

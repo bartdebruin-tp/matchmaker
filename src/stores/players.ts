@@ -30,7 +30,7 @@ export const usePlayersStore = defineStore('players', () => {
 
       if (error) throw error
 
-      players.value = (data || []).map(p => ({
+      players.value = (data || []).map((p: any) => ({
         id: p.id,
         name: p.name,
         createdAt: new Date(p.created_at).getTime()
@@ -61,7 +61,7 @@ export const usePlayersStore = defineStore('players', () => {
           user_id: authStore.user.id,
           name: player.name,
           created_at: new Date(player.createdAt).toISOString()
-        })
+        } as any)
 
       if (error) throw error
 
@@ -78,8 +78,8 @@ export const usePlayersStore = defineStore('players', () => {
     if (!authStore.user) throw new Error('Not authenticated')
 
     try {
-      const { error } = await supabase
-        .from('players')
+      const { error } = await (supabase
+        .from('players') as any)
         .update({ name })
         .eq('id', id)
         .eq('user_id', authStore.user.id)

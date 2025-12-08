@@ -11,6 +11,8 @@ A modern Vue.js application for creating and managing player groups with random 
 - **OAuth Login** - Google & Facebook
 - **Cloud Sync** - Your data syncs across devices
 - **Multi-user** - Each user has their own private data
+- **Match Types** - Random matches or scheduled sessions with attendance tracking
+- **Sub-Pages** - Track player attendance across multiple sessions
 - **Vite** for fast development
 - **TailwindCSS** for beautiful styling
 - **PWA Ready** - Install as a mobile app
@@ -39,8 +41,10 @@ npm run dev
 ## 📚 Documentation
 
 - **[SUPABASE_SETUP.md](SUPABASE_SETUP.md)** - Complete database and auth setup
+- **[MATCH_TYPE_FEATURE.md](MATCH_TYPE_FEATURE.md)** - Match types and sub-pages feature guide
 - **[INTEGRATION_COMPLETE.md](INTEGRATION_COMPLETE.md)** - Integration summary and testing guide
 - **[MATCHMAKER_README.md](MATCHMAKER_README.md)** - Original app documentation
+- **[database_migration.sql](database_migration.sql)** - Migration script for existing databases
 
 ## 🏗️ Project Structuur
 

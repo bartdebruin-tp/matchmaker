@@ -40,8 +40,8 @@ describe('Groups Store', () => {
   describe('fetchGroups', () => {
     it('should fetch groups and their relationships from Supabase', async () => {
       const mockGroups = [
-        { id: 'g1', user_id: 'test-user-id', name: 'Group 1', color: 'bg-blue-500', created_at: '2025-01-01T00:00:00Z' },
-        { id: 'g2', user_id: 'test-user-id', name: 'Group 2', color: 'bg-red-500', created_at: '2025-01-02T00:00:00Z' }
+        { id: 'g1', user_id: 'test-user-id', name: 'Group 1', color: 'bg-blue-500', match_type: 'random', created_at: '2025-01-01T00:00:00Z' },
+        { id: 'g2', user_id: 'test-user-id', name: 'Group 2', color: 'bg-red-500', match_type: 'scheduled', created_at: '2025-01-02T00:00:00Z' }
       ]
 
       const mockGroupPlayers = [
@@ -82,7 +82,9 @@ describe('Groups Store', () => {
 
       expect(groupsStore.groups).toHaveLength(2)
       expect(groupsStore.groups[0].playerIds).toEqual(['p1', 'p2'])
+      expect(groupsStore.groups[0].matchType).toBe('random')
       expect(groupsStore.groups[1].playerIds).toEqual(['p3'])
+      expect(groupsStore.groups[1].matchType).toBe('scheduled')
       expect(groupsStore.activePlayerIds.has('p1')).toBe(true)
       expect(groupsStore.activePlayerIds.has('p3')).toBe(true)
     })
@@ -113,10 +115,11 @@ describe('Groups Store', () => {
         insert: vi.fn().mockResolvedValue({ data: null, error: null })
       } as any)
 
-      const group = await groupsStore.addGroup('New Group', 'bg-green-500')
+      const group = await groupsStore.addGroup('New Group', 'bg-green-500', 'random')
 
       expect(group.name).toBe('New Group')
       expect(group.color).toBe('bg-green-500')
+      expect(group.matchType).toBe('random')
       expect(group.playerIds).toEqual([])
       expect(groupsStore.groups).toHaveLength(1)
     })
@@ -153,10 +156,11 @@ describe('Groups Store', () => {
       } as any)
 
       const groupId = groupsStore.groups[0].id
-      await groupsStore.updateGroup(groupId, 'Updated Group', 'bg-red-500')
+      await groupsStore.updateGroup(groupId, 'Updated Group', 'bg-red-500', 'scheduled')
 
       expect(groupsStore.groups[0].name).toBe('Updated Group')
       expect(groupsStore.groups[0].color).toBe('bg-red-500')
+      expect(groupsStore.groups[0].matchType).toBe('scheduled')
     })
   })
 
@@ -361,8 +365,8 @@ describe('Groups Store', () => {
   describe('getGroupById', () => {
     beforeEach(() => {
       groupsStore.setGroups([
-        { id: 'g1', name: 'Group 1', color: 'bg-blue-500', playerIds: [], createdAt: Date.now() },
-        { id: 'g2', name: 'Group 2', color: 'bg-red-500', playerIds: [], createdAt: Date.now() }
+        { id: 'g1', name: 'Group 1', color: 'bg-blue-500', matchType: 'random', playerIds: [], createdAt: Date.now() },
+        { id: 'g2', name: 'Group 2', color: 'bg-red-500', matchType: 'scheduled', playerIds: [], createdAt: Date.now() }
       ])
     })
 
@@ -381,9 +385,9 @@ describe('Groups Store', () => {
   describe('getGroupsByPlayerId', () => {
     beforeEach(() => {
       groupsStore.setGroups([
-        { id: 'g1', name: 'Group 1', color: 'bg-blue-500', playerIds: ['p1', 'p2'], createdAt: Date.now() },
-        { id: 'g2', name: 'Group 2', color: 'bg-red-500', playerIds: ['p2', 'p3'], createdAt: Date.now() },
-        { id: 'g3', name: 'Group 3', color: 'bg-green-500', playerIds: ['p3'], createdAt: Date.now() }
+        { id: 'g1', name: 'Group 1', color: 'bg-blue-500', matchType: 'random', playerIds: ['p1', 'p2'], createdAt: Date.now() },
+        { id: 'g2', name: 'Group 2', color: 'bg-red-500', matchType: 'random', playerIds: ['p2', 'p3'], createdAt: Date.now() },
+        { id: 'g3', name: 'Group 3', color: 'bg-green-500', matchType: 'scheduled', playerIds: ['p3'], createdAt: Date.now() }
       ])
     })
 

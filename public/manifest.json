@@ -7,9 +7,9 @@
   "background_color": "#ffffff",
   "theme_color": "#10b981",
   "orientation": "portrait",
-  "icons":
+  "icons":[
     {
       "src": "/app-logo.png",
       "type": "image/png"
-    }
+    }]
 }

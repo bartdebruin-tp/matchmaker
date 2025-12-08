@@ -41,6 +41,7 @@ CREATE TABLE groups (
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
   color TEXT NOT NULL,
+  match_type TEXT NOT NULL DEFAULT 'random',
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -61,6 +62,24 @@ CREATE TABLE active_players (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, player_id)
 );
+
+-- Sub-pages for scheduled groups
+CREATE TABLE sub_pages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  group_id UUID NOT NULL REFERENCES groups(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  date TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Sub-page player attendance tracking
+CREATE TABLE sub_page_players (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  sub_page_id UUID NOT NULL REFERENCES sub_pages(id) ON DELETE CASCADE,
+  player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(sub_page_id, player_id)
+);
 ```
 
 ### 2. Create Indexes
@@ -73,6 +92,9 @@ CREATE INDEX idx_group_players_group_id ON group_players(group_id);
 CREATE INDEX idx_group_players_player_id ON group_players(player_id);
 CREATE INDEX idx_active_players_user_id ON active_players(user_id);
 CREATE INDEX idx_active_players_player_id ON active_players(player_id);
+CREATE INDEX idx_sub_pages_group_id ON sub_pages(group_id);
+CREATE INDEX idx_sub_page_players_sub_page_id ON sub_page_players(sub_page_id);
+CREATE INDEX idx_sub_page_players_player_id ON sub_page_players(player_id);
 ```
 
 ### 3. Enable Row Level Security (RLS)
@@ -83,6 +105,8 @@ ALTER TABLE players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE groups ENABLE ROW LEVEL SECURITY;
 ALTER TABLE group_players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE active_players ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sub_pages ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sub_page_players ENABLE ROW LEVEL SECURITY;
 ```
 
 ### 4. Create RLS Policies
@@ -165,6 +189,81 @@ CREATE POLICY "Users can insert their own active players"
 CREATE POLICY "Users can delete their own active players"
   ON active_players FOR DELETE
   USING (auth.uid() = user_id);
+
+-- Sub-pages policies
+CREATE POLICY "Users can view sub-pages for their groups"
+  ON sub_pages FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM groups
+      WHERE groups.id = sub_pages.group_id
+      AND groups.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can insert sub-pages for their groups"
+  ON sub_pages FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM groups
+      WHERE groups.id = sub_pages.group_id
+      AND groups.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can update sub-pages for their groups"
+  ON sub_pages FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM groups
+      WHERE groups.id = sub_pages.group_id
+      AND groups.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can delete sub-pages for their groups"
+  ON sub_pages FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM groups
+      WHERE groups.id = sub_pages.group_id
+      AND groups.user_id = auth.uid()
+    )
+  );
+
+-- Sub-page players policies
+CREATE POLICY "Users can view sub-page-players for their groups"
+  ON sub_page_players FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM sub_pages
+      JOIN groups ON groups.id = sub_pages.group_id
+      WHERE sub_pages.id = sub_page_players.sub_page_id
+      AND groups.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can insert sub-page-players for their groups"
+  ON sub_page_players FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM sub_pages
+      JOIN groups ON groups.id = sub_pages.group_id
+      WHERE sub_pages.id = sub_page_players.sub_page_id
+      AND groups.user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can delete sub-page-players for their groups"
+  ON sub_page_players FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM sub_pages
+      JOIN groups ON groups.id = sub_pages.group_id
+      WHERE sub_pages.id = sub_page_players.sub_page_id
+      AND groups.user_id = auth.uid()
+    )
+  );
 ```
 
 ## Authentication Setup
