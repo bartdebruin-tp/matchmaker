@@ -5,7 +5,6 @@ Your MatchMaker app now has full authentication and cloud database integration w
 ## What Was Integrated
 
 ### ✅ Authentication
-- **OAuth Login**: Google and Facebook
 - **Email/Password**: Sign up, sign in, password reset
 - **Session Management**: Automatic token refresh
 - **Route Guards**: Protected routes requiring login

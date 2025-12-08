@@ -132,25 +132,7 @@ describe('Auth Store', () => {
     })
   })
 
-  describe('signInWithFacebook', () => {
-    it('should initiate Facebook OAuth sign in', async () => {
-      const { supabase } = await import('@/lib/supabase')
-      
-      vi.mocked(supabase.auth.signInWithOAuth).mockResolvedValue({ 
-        data: { url: 'https://oauth.facebook.com', provider: 'facebook' },
-        error: null 
-      } as any)
 
-      await authStore.signInWithFacebook()
-
-      expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
-        provider: 'facebook',
-        options: {
-          redirectTo: expect.stringContaining(window.location.origin)
-        }
-      })
-    })
-  })
 
   describe('signInWithEmail', () => {
     it('should sign in with email and password', async () => {

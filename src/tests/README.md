@@ -57,7 +57,6 @@ npm run test:coverage
 ### Authentication Store (`auth.test.ts`)
 - ✅ Session initialization
 - ✅ Google OAuth sign in
-- ✅ Facebook OAuth sign in
 - ✅ Email/password sign in
 - ✅ Email sign up
 - ✅ Sign out

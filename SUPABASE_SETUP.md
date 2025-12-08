@@ -24,7 +24,61 @@ This document provides step-by-step instructions for setting up the Supabase dat
 
 Run the following SQL commands in the Supabase SQL Editor (Project Dashboard > SQL Editor).
 
-### 1. Create Tables
+### 1. Create User Profile Table and Trigger (CRITICAL)
+
+**This step is required to fix the "Database error saving new user" error.**
+
+```sql
+-- Public users table for user metadata
+CREATE TABLE IF NOT EXISTS public.users (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS on public.users
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
+
+-- Create RLS policies for public.users
+CREATE POLICY "Users can view their own profile"
+  ON public.users FOR SELECT
+  USING (auth.uid() = id);
+
+CREATE POLICY "Users can update their own profile"
+  ON public.users FOR UPDATE
+  USING (auth.uid() = id);
+
+-- Function to handle new user creation
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.users (id, email, created_at, updated_at)
+  VALUES (NEW.id, NEW.email, NOW(), NOW());
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE WARNING 'Error in handle_new_user: %', SQLERRM;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to automatically create user profile on signup
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user();
+
+-- Backfill existing users
+INSERT INTO public.users (id, email, created_at, updated_at)
+SELECT id, email, created_at, updated_at
+FROM auth.users
+WHERE id NOT IN (SELECT id FROM public.users)
+ON CONFLICT (id) DO NOTHING;
+```
+
+### 2. Create Application Tables
 
 ```sql
 -- Players table
@@ -82,7 +136,7 @@ CREATE TABLE sub_page_players (
 );
 ```
 
-### 2. Create Indexes
+### 3. Create Indexes
 
 ```sql
 -- Indexes for better query performance
@@ -97,7 +151,7 @@ CREATE INDEX idx_sub_page_players_sub_page_id ON sub_page_players(sub_page_id);
 CREATE INDEX idx_sub_page_players_player_id ON sub_page_players(player_id);
 ```
 
-### 3. Enable Row Level Security (RLS)
+### 4. Enable Row Level Security (RLS)
 
 ```sql
 -- Enable RLS on all tables
@@ -109,7 +163,7 @@ ALTER TABLE sub_pages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sub_page_players ENABLE ROW LEVEL SECURITY;
 ```
 
-### 4. Create RLS Policies
+### 5. Create RLS Policies
 
 ```sql
 -- Players policies
@@ -268,26 +322,7 @@ CREATE POLICY "Users can delete sub-page-players for their groups"
 
 ## Authentication Setup
 
-### 1. Enable OAuth Providers
-
-In your Supabase dashboard, go to Authentication > Providers:
-
-#### Google OAuth
-1. Enable Google provider
-2. Follow Supabase's instructions to create OAuth credentials in Google Cloud Console
-3. Add your authorized redirect URIs:
-   - `https://[YOUR-PROJECT-REF].supabase.co/auth/v1/callback`
-   - For local development: `http://localhost:5173` (or your dev port)
-
-#### Facebook OAuth
-1. Enable Facebook provider
-2. Create a Facebook App at [developers.facebook.com](https://developers.facebook.com)
-3. Add Facebook Login product
-4. Configure OAuth redirect URI:
-   - `https://[YOUR-PROJECT-REF].supabase.co/auth/v1/callback`
-5. Enter your Facebook App ID and App Secret in Supabase
-
-### 2. Configure Email Authentication
+### 1. Configure Email Authentication
 
 1. In Authentication > Providers, enable Email provider
 2. Configure email templates if desired (Settings > Auth > Email Templates)
@@ -304,8 +339,7 @@ In your Supabase dashboard, go to Authentication > Providers:
 
 2. Navigate to `/login` and try:
    - Signing up with email/password
-   - Logging in with Google
-   - Logging in with Facebook
+   - Logging in with email/password
 
 3. After authentication, you should be redirected to the home page
 
@@ -328,10 +362,7 @@ Check your Supabase dashboard:
 - Check that all RLS policies are created correctly
 - Verify that `auth.uid()` matches the `user_id` in your policies
 
-### OAuth Not Working
-- Verify OAuth credentials are correct
-- Check that redirect URIs match exactly
-- Ensure OAuth apps are in production mode (not test mode)
+
 
 ### Data Not Syncing
 - Check browser console for errors
