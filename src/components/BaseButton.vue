@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 
 interface Props {
-  variant?: 'primary' | 'secondary' | 'danger'
+  variant?: 'primary' | 'secondary' | 'danger' | 'transparent' | 'card'
   size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
   disabled?: boolean
@@ -21,6 +21,8 @@ const classes = computed(() => {
   const variantClasses = {
     primary: 'bg-green-600 hover:bg-green-700 text-white disabled:bg-green-300',
     secondary: 'bg-stone-200 hover:bg-stone-300 text-stone-900 disabled:bg-stone-100',
+    transparent: 'bg-transparent hover:bg-transparent text-stone-900 disabled:bg-stone-50',
+    card: 'bg-white border border-stone-200 hover:border-stone-300 text-stone-900 disabled:bg-stone-50',
     danger: 'bg-red-600 hover:bg-red-700 text-white disabled:bg-red-300'
   }
   

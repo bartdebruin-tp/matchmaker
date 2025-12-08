@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Player } from '@/types'
+import BaseButton from '@/components/BaseButton.vue'
 
 interface Props {
   player: Player
@@ -32,12 +33,14 @@ const cardClasses = computed(() => {
 <template>
   <div :class="cardClasses">
     <div class="flex items-center justify-between">
-      <button
-        class="flex-1 text-left p-4 "
+      <BaseButton
+        variant="transparent"
+        fullWidth
         @click="emit('toggle')"
+        class="text-left"
       >
         <p class="font-medium text-stone-900">{{ player.name }}</p>
-      </button>
+      </BaseButton>
       
       <div v-if="showActions" class="flex items-center gap-2 ml-4">
         <button

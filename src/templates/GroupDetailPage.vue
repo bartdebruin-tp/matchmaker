@@ -299,13 +299,15 @@ onMounted(() => {
 
           <!-- Sub-pages List -->
           <div v-if="subPages.length > 0" class="space-y-2">
-            <button
+            <BaseButton
               v-for="subPage in subPages"
               :key="subPage.id"
-              class="w-full p-4 text-left rounded-lg bg-white border border-stone-200 hover:border-green-500 hover:bg-green-50 transition-all shadow-sm"
+              variant="card"
+              fullWidth
               @click="openSubPage(subPage.id)"
+              class="text-left"
             >
-              <div class="flex items-center justify-between">
+              <div class="flex items-center justify-between w-full">
                 <div class="flex items-center gap-3">
                   <CalendarIcon class="w-5 h-5 text-stone-500" />
                   <div>
@@ -317,7 +319,7 @@ onMounted(() => {
                   <CheckIcon class="w-5 h-5 text-green-600" />
                 </div>
               </div>
-            </button>
+            </BaseButton>
           </div>
 
           <!-- Empty State -->
@@ -424,14 +426,16 @@ onMounted(() => {
           </button>
         </div>
         <div class="p-4 overflow-y-auto flex-1 space-y-2">
-          <button
+          <BaseButton
             v-for="player in availablePlayers"
             :key="player.id"
-            class="w-full p-4 text-left rounded-lg border border-stone-200 hover:border-green-500 hover:bg-green-50 transition-all shadow-sm"
+            variant="secondary"
+            fullWidth
             @click="addPlayerToGroup(player.id)"
+            class="text-left"
           >
             <p class="font-medium text-stone-900">{{ player.name }}</p>
-          </button>
+          </BaseButton>
           <p v-if="availablePlayers.length === 0" class="text-center text-stone-500 py-8">
             {{ t.players.noPlayers }}
           </p>
@@ -515,16 +519,18 @@ onMounted(() => {
             </p>
           </div>
           <div class="space-y-2">
-            <button
+            <BaseButton
               v-for="player in groupPlayers"
               :key="player.id"
-              class="w-full p-4 text-left rounded-lg border transition-all shadow-sm"
+              variant="secondary"
+              fullWidth
+              @click="togglePlayerPresence(player.id)"
               :class="[
                 selectedSubPage.presentPlayerIds.includes(player.id)
                   ? 'border-green-500 bg-green-50'
-                  : 'border-stone-200 hover:border-stone-300'
+                  : ''
               ]"
-              @click="togglePlayerPresence(player.id)"
+              class="text-left"
             >
               <div class="flex items-center justify-between">
                 <p class="font-medium text-stone-900">{{ player.name }}</p>
@@ -533,7 +539,7 @@ onMounted(() => {
                   class="w-5 h-5 text-green-600"
                 />
               </div>
-            </button>
+            </BaseButton>
           </div>
         </div>
       </div>

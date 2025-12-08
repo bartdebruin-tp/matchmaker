@@ -49,33 +49,37 @@
             />
           </div>
 
-          <button
+          <BaseButton
             type="submit"
             :disabled="loading"
-            class="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            variant="primary"
+            size="lg"
+            fullWidth
           >
             {{ loading ? t.auth.pleaseWait : (isSignUp ? t.auth.signUp : t.auth.signIn) }}
-          </button>
+          </BaseButton>
         </form>
 
         <!-- Toggle Sign Up / Sign In -->
         <div class="mt-4 text-center">
-          <button
+          <BaseButton
             @click="toggleMode"
-            class="text-sm text-green-600 hover:text-green-700 font-medium"
+            variant="secondary"
+            size="sm"
           >
             {{ isSignUp ? t.auth.alreadyHaveAccount : t.auth.dontHaveAccount }}
-          </button>
+          </BaseButton>
         </div>
 
         <!-- Forgot Password -->
         <div v-if="!isSignUp" class="mt-2 text-center">
-          <button
+          <BaseButton
             @click="showResetPassword = true"
-            class="text-sm text-gray-600 hover:text-gray-700"
+            variant="secondary"
+            size="sm"
           >
             {{ t.auth.forgotPassword }}
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>
@@ -97,20 +101,22 @@
             />
           </div>
           <div class="flex gap-3">
-            <button
+            <BaseButton
               type="button"
               @click="showResetPassword = false"
-              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              variant="secondary"
+              fullWidth
             >
               {{ t.common.cancel }}
-            </button>
-            <button
+            </BaseButton>ton>
+            <BaseButton
               type="submit"
               :disabled="loading"
-              class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+              variant="primary"
+              fullWidth
             >
               {{ t.auth.sendResetLink }}
-            </button>
+            </BaseButton>
           </div>
         </form>
       </div>
@@ -124,6 +130,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { useI18n } from '@/composables/useI18n'
 import BaseModal from '@/components/BaseModal.vue'
+import BaseButton from '@/components/BaseButton.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()

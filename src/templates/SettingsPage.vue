@@ -42,21 +42,23 @@ async function handleLogout() {
           <p class="text-sm text-stone-600 mt-1">{{ t.settings.selectLanguage }}</p>
         </div>
         <div class="p-4 space-y-2">
-          <button
+          <BaseButton
             v-for="lang in availableLocales"
             :key="lang.code"
             @click="setLocale(lang.code)"
+            variant="card"
+            fullWidth
             :class="[
-              'w-full px-4 py-3 rounded-lg border-2 text-left flex items-center gap-3 transition-colors',
               locale === lang.code
                 ? 'border-green-500 bg-green-50 text-green-700'
-                : 'border-stone-200 hover:border-stone-300 text-stone-700'
+                : ''
             ]"
+            class="text-left"
           >
             <span class="text-2xl">{{ lang.flag }}</span>
             <span class="font-medium">{{ lang.name }}</span>
             <span v-if="locale === lang.code" class="ml-auto text-green-600">✓</span>
-          </button>
+          </BaseButton>
         </div>
       </div>
 
